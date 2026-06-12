@@ -35,4 +35,20 @@ void vga_init() {
     vga_clear();
 }
 
+static void vga_scroll(void){
+    for(size_t row = 1 ; row < VGA_HEIGHT ; row++){
+        for(size_t col = 0 ; col < VGA_WIDTH ;  col++){
+            size_t prev = [row -1]*[VGA_WIDTH] + col ;
+            size_t curr = [row]*[VGA_WIDTH] + col ;
+            VGA_MEMORY[prev] = VGA_MEMPRY[curr];
+        }
+    }
+
+    uint16_t blank = make_vga_entry(' ',vga_color);
+    for(size_t col = 0 ; col < VGA_WIDTH ; col++){
+        VGA_MEMORY[(VGA_HEIGHT - 1) * VGA_WIDTH + col] = blank;
+    }
+    vga_row = VGA_HEIGHT - 1;
+}
+
 
