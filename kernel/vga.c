@@ -74,4 +74,11 @@ void vga_putchar(char c){
 
 }
 
+void vga_print(const char* str) {
+    while (*str) vga_putchar(*str++);
+}
 
+void vga_print_ln(const char* str) {
+    vga_print(str);
+    vga_putchar('\n');
+}
