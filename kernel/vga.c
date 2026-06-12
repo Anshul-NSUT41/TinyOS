@@ -29,3 +29,10 @@ void vga_clear(void){
     vga_row = 0 ;
     vga_col = 0 ;
 }
+
+void vga_init() {
+    vga_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+    vga_clear();
+}
+
+
