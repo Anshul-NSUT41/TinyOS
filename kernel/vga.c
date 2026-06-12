@@ -51,4 +51,27 @@ static void vga_scroll(void){
     vga_row = VGA_HEIGHT - 1;
 }
 
+void vga_putchar(char c){
+    if(c == '\n'){
+        vga_col = 0 ;
+        if (++vga_row == VGA_HEIGHT) vga_scroll();
+        return;
+    }
+    if(c == '\r'){
+        vga_col = 0 ;
+        return;
+    }   
+    if(c == '\b'){
+        if(vga_col > 0) vga_col--;
+        VGA_MEMORY[vga_row * VGA_WIDTH + vga_col] = make_vga_entry(' ', vga_color);
+        return;
+    }
+    VGA_MEMORY[vga_row * VGA_WIDTH + vga_col] = make_vga_entry(c, vga_color);
+    if(++vga_col == VGA_WIDTH){
+        vga_col = 0 ;
+        if(++vga_row == VGA_HEIGHT) vga_scroll();
+    }
+
+}
+
 
