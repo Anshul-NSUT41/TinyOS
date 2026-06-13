@@ -10,4 +10,9 @@ dd MULTIBOOT_MAGIC
 dd MULTIBOOT_FLAGS
 dd MULTIBOOT_CHECKSUM
 
-// we reserve 16KB for the bootloader, so that it can load the kernel at 0x100000
+;we reserve 16KB for the bootloader, so that it can load the kernel at 0x100000
+    section .bss
+    align 16 
+    stack_bottom :
+      resb 16384 ; 16KB stack
+    stack_top :
