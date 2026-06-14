@@ -1,6 +1,6 @@
 #include "vga.h"
 
-static uint16_t* VGA_MEMORY  (uint16_t*) 0xB8000;
+static uint16_t* VGA_MEMORY = (uint16_t*) 0xB8000;
 
 static size_t vga_row;
 static size_t vga_col;
@@ -31,16 +31,16 @@ void vga_clear(void){
 }
 
 void vga_init() {
-    vga_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+    vga_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_RED);
     vga_clear();
 }
 
 static void vga_scroll(void){
     for(size_t row = 1 ; row < VGA_HEIGHT ; row++){
         for(size_t col = 0 ; col < VGA_WIDTH ;  col++){
-            size_t prev = [row -1]*[VGA_WIDTH] + col ;
-            size_t curr = [row]*[VGA_WIDTH] + col ;
-            VGA_MEMORY[prev] = VGA_MEMPRY[curr];
+            size_t prev = (row -1)*VGA_WIDTH + col ;
+            size_t curr = row*VGA_WIDTH + col ;
+            VGA_MEMORY[prev] = VGA_MEMORY[curr];
         }
     }
 

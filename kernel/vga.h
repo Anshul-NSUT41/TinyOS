@@ -1,5 +1,5 @@
-#ifndef vga.h
-#define vga.h 
+#ifndef vga_h
+#define vga_h 
 #include "../include/types.h"
 
 #define VGA_WIDTH  80
