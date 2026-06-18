@@ -14,3 +14,7 @@ static inline uint8_t port_byte_in(uint16_t port){
 static inline void port_byte_out(uint16_t port , uint8_t data){
     __asm__ volatile ("outb %0 , %1" : : "a"(data) , "Nd"(port));
 }
+
+static inline void io_wait(void){
+    port_byte_out(0x80, 0); 
+}
