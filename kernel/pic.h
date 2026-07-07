@@ -17,3 +17,8 @@
 #define PIC2_COMMAND 0xA0   // Slave PIC command port
 #define PIC2_DATA    0xA1   // Slave PIC data port
 #define PIC_EOI      0x20   // End-of-interrupt command
+
+void pic_init(void);
+void pic_send_eoi(uint8_t irq);
+
+#endif
