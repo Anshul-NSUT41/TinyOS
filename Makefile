@@ -1,4 +1,3 @@
-cat > ~/tinyos/Makefile << 'EOF'
 # ── TinyOS Makefile ───────────────────────────────────────────────────────
 # Targets:
 #   make          → build the ISO
@@ -21,7 +20,8 @@ CFLAGS = -m32 -ffreestanding -fno-builtin -fno-stack-protector \
 LDFLAGS = -m elf_i386 -T linker.ld --oformat=elf32-i386
 
 # ── Source files → object files ───────────────────────────────────────────
-C_SRCS   = kernel/kernel.c kernel/vga.c kernel/idt.c kernel/isr.c kernel/irq.c kernel/timer.c kernel/keyboard.c
+C_SRCS   = kernel/kernel.c kernel/vga.c kernel/idt.c \
+           kernel/pic.c kernel/keyboard.c
 ASM_SRCS = boot/boot.asm boot/idt_asm.asm 
 
 C_OBJS   = $(C_SRCS:.c=.o)
@@ -36,7 +36,7 @@ all: tinyos.iso
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-boot/boot.o: boot/boot.asm
+%.o: %.asm
 	$(AS) -f elf32 $< -o $@
 
 kernel.elf: $(ALL_OBJS)
@@ -58,4 +58,3 @@ debug: tinyos.iso
 clean:
 	rm -f $(ALL_OBJS) kernel.elf tinyos.iso
 	rm -rf iso
-EOF
