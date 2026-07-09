@@ -36,22 +36,32 @@ VGA text mode: OK
 ## Project Structure
 
 ```text
-tinyOS/
+TinyOS/
 ├── assets/
-│   └── Boot-screen.png
 ├── boot/
-│   └── boot.asm        # Kernel entry point and multiboot header
-│
+│   ├── boot.asm
+│   └── idt_asm.asm
+├── include/
+│   └── types.h
 ├── kernel/
-│   ├── kernel.c        # Main kernel code
-│   ├── vga.c           # VGA text-mode driver
-│   └── vga.h
-│
-├── include/            # Future headers
-│
-├── grub.cfg            # GRUB configuration
-├── linker.ld           # Kernel memory layout
-├── Makefile            # Build system
+│   ├── kernel.c
+│   ├── idt/
+│   │   ├── idt.c
+│   │   └── idt.h
+│   ├── keyboard/
+│   │   ├── keyboard.c
+│   │   └── keyboard.h
+│   ├── pic/
+│   │   ├── pic.c
+│   │   └── pic.h
+│   ├── ports/
+│   │   └── ports.h
+│   └── vga/
+│       ├── vga.c
+│       └── vga.h
+├── grub.cfg
+├── linker.ld
+├── Makefile
 └── README.md
 ```
 
@@ -118,13 +128,11 @@ make clean
 - [x] VGA text output
 - [x] Bootable ISO generation
 - [x] QEMU support
-
+- [x] Keyboard driver
+- [x] Interrupt handling (IDT)
 ---
 
 ## Planned Features
-
-- [ ] Keyboard driver
-- [ ] Interrupt handling (IDT)
 - [ ] Memory management
 - [ ] Heap allocator
 - [ ] Shell
