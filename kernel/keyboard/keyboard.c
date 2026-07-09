@@ -72,3 +72,13 @@ static void keyboard_handler_impl(void) {
     }
     pic_send_eoi(1); 
 }
+
+// We use a GCC naked function + inline assembly for precise control.
+void __attribute__((naked)) keyboard_irq_handler(void) {
+    __asm__ volatile (
+        "pusha\n"                    // Push all general-purpose registers
+        "call keyboard_handler_impl\n"
+        "popa\n"                     // Restore all registers
+        "iret\n"                     // Return from interrupt
+    );
+}
