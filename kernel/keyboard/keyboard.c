@@ -82,3 +82,22 @@ void __attribute__((naked)) keyboard_irq_handler(void) {
         "iret\n"                     // Return from interrupt
     );
 }
+
+void keyboard_init(void) {
+    idt_set_gate(33, (uint32_t)keyboard_irq_handler, 0x08, 0x8E);
+}
+
+char keyboard_getchar(void) {
+    if (buf_head == buf_tail) return 0; 
+    char c = key_buffer[buf_tail];
+    buf_tail = (buf_tail + 1) % KEY_BUFFER_SIZE;
+    return c;
+}
+
+char keyboard_read(void) {
+    char c;
+    while ((c = keyboard_getchar()) == 0) {
+        __asm__ volatile ("hlt");  // Sleep until next interrupt (saves CPU)
+    }
+    return c;
+}
