@@ -1,5 +1,5 @@
-#ifndef PORTS_H
-#define PORTS_H
+#ifndef ports_h
+#define ports_h
 
 #include "../include/types.h"
 
@@ -18,3 +18,5 @@ static inline void port_byte_out(uint16_t port , uint8_t data){
 static inline void io_wait(void){
     port_byte_out(0x80, 0); 
 }
+
+#endif

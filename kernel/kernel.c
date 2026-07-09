@@ -5,10 +5,13 @@
 
 void kernel_main(void) {
     vga_init();
-    idt_init();
-    pic_init();
-    keyboard_init();
-
+    idt_init();      // Setup IDT gates (exceptions and IRQs)
+    pic_init();      // Remap the PIC and unmask IRQ0, IRQ1, IRQ2
+    keyboard_init(); // Register the keyboard callback
+    
+    // Enable interrupts safely
+    __asm__ volatile ("sti");
+    
     vga_print_ln("==============================");
     vga_print_ln("  Welcome to TinyOS v0.1");
     vga_print_ln("==============================");

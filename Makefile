@@ -14,14 +14,24 @@ GRUB   = grub-mkrescue
 # ── Compiler flags ────────────────────────────────────────────────────────
 
 CFLAGS = -m32 -ffreestanding -fno-builtin -fno-stack-protector \
-         -nostdlib -Wall -Wextra -Iinclude
+         -nostdlib -Wall -Wextra \
+         -Iinclude \
+         -Ikernel/vga \
+         -Ikernel/idt \
+         -Ikernel/pic \
+         -Ikernel/keyboard \
+		 -Ikernel/ports
 
 # ── Linker flags ──────────────────────────────────────────────────────────
 LDFLAGS = -m elf_i386 -T linker.ld --oformat=elf32-i386
 
 # ── Source files → object files ───────────────────────────────────────────
-C_SRCS   = kernel/kernel.c kernel/vga.c kernel/idt.c \
-           kernel/pic.c kernel/keyboard.c
+C_SRCS = \
+    kernel/kernel.c \
+    kernel/vga/vga.c \
+    kernel/idt/idt.c \
+    kernel/pic/pic.c \
+    kernel/keyboard/keyboard.c
 ASM_SRCS = boot/boot.asm boot/idt_asm.asm 
 
 C_OBJS   = $(C_SRCS:.c=.o)
@@ -53,7 +63,7 @@ run: tinyos.iso
 	qemu-system-i386 -cdrom tinyos.iso -m 32M
 
 debug: tinyos.iso
-	qemu-system-i386 -cdrom tinyos.iso -m 32M -s -S
+	qemu-system-i386 -cdrom tinyos.iso -boot d -m 32M
 
 clean:
 	rm -f $(ALL_OBJS) kernel.elf tinyos.iso
