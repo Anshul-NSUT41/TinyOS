@@ -1,41 +1,21 @@
-# ── TinyOS Makefile ───────────────────────────────────────────────────────
-# Targets:
-#   make          → build the ISO
-#   make run      → build and run in QEMU
-#   make debug    → build and run with GDB server on port 1234
-#   make clean    → delete all build output
-
-# ── Tools ─────────────────────────────────────────────────────────────────
+cat > ~/tinyos/Makefile << 'EOF'
 CC     = gcc
 AS     = nasm
 LD     = ld
 GRUB   = grub-mkrescue
 
-# ── Compiler flags ────────────────────────────────────────────────────────
-# -m32              : compile for 32-bit x86 (our kernel is 32-bit)
-# -ffreestanding    : don't assume a standard library exists
-# -fno-builtin      : don't use GCC's built-in replacements for memcpy etc.
-# -fno-stack-protector : no stack canaries (requires OS support we don't have)
-# -nostdlib         : don't link against the C standard library
-# -Wall -Wextra     : enable all warnings
-# -Iinclude         : look for headers in the include/ directory
-CFLAGS = -m32 -ffreestanding -fno-builtin -fno-stack-protector \
-         -nostdlib -Wall -Wextra -Iinclude
-
-# ── Linker flags ──────────────────────────────────────────────────────────
-# -m elf_i386       : produce a 32-bit ELF binary
-# -T linker.ld      : use our custom memory layout
+CFLAGS  = -m32 -ffreestanding -fno-builtin -fno-stack-protector \
+          -nostdlib -Wall -Wextra -Iinclude
 LDFLAGS = -m elf_i386 -T linker.ld --oformat=elf32-i386
 
-# ── Source files → object files ───────────────────────────────────────────
-C_SRCS   = kernel/kernel.c kernel/vga.c
-ASM_SRCS = boot/boot.asm
+C_SRCS   = kernel/kernel.c kernel/vga.c kernel/idt.c \
+           kernel/pic.c kernel/keyboard.c
+ASM_SRCS = boot/boot.asm boot/idt_asm.asm
 
 C_OBJS   = $(C_SRCS:.c=.o)
 ASM_OBJS = $(ASM_SRCS:.asm=.o)
 ALL_OBJS = $(ASM_OBJS) $(C_OBJS)
 
-# ── Build targets ─────────────────────────────────────────────────────────
 .PHONY: all run debug clean
 
 all: tinyos.iso
@@ -43,7 +23,7 @@ all: tinyos.iso
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-boot/boot.o: boot/boot.asm
+%.o: %.asm
 	$(AS) -f elf32 $< -o $@
 
 kernel.elf: $(ALL_OBJS)
@@ -58,10 +38,11 @@ tinyos.iso: kernel.elf grub.cfg
 
 run: tinyos.iso
 	qemu-system-i386 -cdrom tinyos.iso -m 32M
-	
+
 debug: tinyos.iso
 	qemu-system-i386 -cdrom tinyos.iso -m 32M -s -S
 
 clean:
 	rm -f $(ALL_OBJS) kernel.elf tinyos.iso
 	rm -rf iso
+EOF
