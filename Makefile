@@ -1,21 +1,34 @@
 cat > ~/tinyos/Makefile << 'EOF'
+# ── TinyOS Makefile ───────────────────────────────────────────────────────
+# Targets:
+#   make          → build the ISO
+#   make run      → build and run in QEMU
+#   make debug    → build and run with GDB server on port 1234
+#   make clean    → delete all build output
+
+# ── Tools ─────────────────────────────────────────────────────────────────
 CC     = gcc
 AS     = nasm
 LD     = ld
 GRUB   = grub-mkrescue
 
-CFLAGS  = -m32 -ffreestanding -fno-builtin -fno-stack-protector \
-          -nostdlib -Wall -Wextra -Iinclude
+# ── Compiler flags ────────────────────────────────────────────────────────
+
+CFLAGS = -m32 -ffreestanding -fno-builtin -fno-stack-protector \
+         -nostdlib -Wall -Wextra -Iinclude
+
+# ── Linker flags ──────────────────────────────────────────────────────────
 LDFLAGS = -m elf_i386 -T linker.ld --oformat=elf32-i386
 
-C_SRCS   = kernel/kernel.c kernel/vga.c kernel/idt.c \
-           kernel/pic.c kernel/keyboard.c
-ASM_SRCS = boot/boot.asm boot/idt_asm.asm
+# ── Source files → object files ───────────────────────────────────────────
+C_SRCS   = kernel/kernel.c kernel/vga.c kernel/idt.c kernel/isr.c kernel/irq.c kernel/timer.c kernel/keyboard.c
+ASM_SRCS = boot/boot.asm boot/idt_asm.asm 
 
 C_OBJS   = $(C_SRCS:.c=.o)
 ASM_OBJS = $(ASM_SRCS:.asm=.o)
 ALL_OBJS = $(ASM_OBJS) $(C_OBJS)
 
+# ── Build targets ─────────────────────────────────────────────────────────
 .PHONY: all run debug clean
 
 all: tinyos.iso
@@ -23,7 +36,7 @@ all: tinyos.iso
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-%.o: %.asm
+boot/boot.o: boot/boot.asm
 	$(AS) -f elf32 $< -o $@
 
 kernel.elf: $(ALL_OBJS)
