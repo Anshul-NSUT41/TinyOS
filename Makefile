@@ -12,24 +12,27 @@ LD     = ld
 GRUB   = grub-mkrescue
 
 # ── Compiler flags ────────────────────────────────────────────────────────
-# -m32              : compile for 32-bit x86 (our kernel is 32-bit)
-# -ffreestanding    : don't assume a standard library exists
-# -fno-builtin      : don't use GCC's built-in replacements for memcpy etc.
-# -fno-stack-protector : no stack canaries (requires OS support we don't have)
-# -nostdlib         : don't link against the C standard library
-# -Wall -Wextra     : enable all warnings
-# -Iinclude         : look for headers in the include/ directory
+
 CFLAGS = -m32 -ffreestanding -fno-builtin -fno-stack-protector \
-         -nostdlib -Wall -Wextra -Iinclude
+         -nostdlib -Wall -Wextra \
+         -Iinclude \
+         -Ikernel/vga \
+         -Ikernel/idt \
+         -Ikernel/pic \
+         -Ikernel/keyboard \
+		 -Ikernel/ports
 
 # ── Linker flags ──────────────────────────────────────────────────────────
-# -m elf_i386       : produce a 32-bit ELF binary
-# -T linker.ld      : use our custom memory layout
 LDFLAGS = -m elf_i386 -T linker.ld --oformat=elf32-i386
 
 # ── Source files → object files ───────────────────────────────────────────
-C_SRCS   = kernel/kernel.c kernel/vga.c
-ASM_SRCS = boot/boot.asm
+C_SRCS = \
+    kernel/kernel.c \
+    kernel/vga/vga.c \
+    kernel/idt/idt.c \
+    kernel/pic/pic.c \
+    kernel/keyboard/keyboard.c
+ASM_SRCS = boot/boot.asm boot/idt_asm.asm 
 
 C_OBJS   = $(C_SRCS:.c=.o)
 ASM_OBJS = $(ASM_SRCS:.asm=.o)
@@ -43,7 +46,7 @@ all: tinyos.iso
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-boot/boot.o: boot/boot.asm
+%.o: %.asm
 	$(AS) -f elf32 $< -o $@
 
 kernel.elf: $(ALL_OBJS)
@@ -58,9 +61,9 @@ tinyos.iso: kernel.elf grub.cfg
 
 run: tinyos.iso
 	qemu-system-i386 -cdrom tinyos.iso -m 32M
-	
+
 debug: tinyos.iso
-	qemu-system-i386 -cdrom tinyos.iso -m 32M -s -S
+	qemu-system-i386 -cdrom tinyos.iso -boot d -m 32M
 
 clean:
 	rm -f $(ALL_OBJS) kernel.elf tinyos.iso
