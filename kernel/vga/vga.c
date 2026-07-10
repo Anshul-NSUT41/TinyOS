@@ -31,7 +31,7 @@ void vga_clear(void){
 }
 
 void vga_init() {
-    vga_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
+    vga_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
     vga_clear();
 }
 
